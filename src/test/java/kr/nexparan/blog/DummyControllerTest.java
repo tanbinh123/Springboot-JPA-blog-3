@@ -1,9 +1,11 @@
 package kr.nexparan.blog;
 
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@SpringBootTest
 @RestController
 public class DummyControllerTest {
 	

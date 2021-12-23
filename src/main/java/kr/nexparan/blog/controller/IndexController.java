@@ -20,11 +20,4 @@ public class IndexController {
 	public String index() {
 		return "index";
 	}
-	
-	@PostMapping("/dummy/join")
-	public String join(User user) {
-		user.setRole(RoleType.USER);
-		userRepository.save(user);
-		return "회원 가입이 완료 되었습니다.";
-	}
 }
