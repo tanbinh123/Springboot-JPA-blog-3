@@ -31,7 +31,7 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;//시쿼스, auto_increment
 	
-	@Column(nullable = false, length=30)
+	@Column(nullable = false, length=30, unique=true)
 	private String username;
 	@Column(nullable = false, length=100)
 	private String password;

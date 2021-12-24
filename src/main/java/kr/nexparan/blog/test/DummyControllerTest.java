@@ -5,10 +5,12 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,14 +28,25 @@ public class DummyControllerTest {
 	@Autowired
 	private UserRepository userRepository;
 	
-	@Transactional
+	@DeleteMapping("/dummy/user/{id}")
+	public String delete(@PathVariable int id) {
+		try {
+			userRepository.deleteById(id);
+		} catch(EmptyResultDataAccessException e) {
+			return "삭제에 실패했습니다. 해당 id는 DB에 없습니다.";
+		}
+		
+		return "삭제 되었습니다. id : " + id;
+	}
+	
+	@Transactional//함수 종료시에 자동 커밋됨
 	@PutMapping("/dummy/user/{id}")
 	public User updateUser(@PathVariable int id, @RequestBody User requestUser) {
 		System.out.println("password : " + requestUser.getPassword());
 		System.out.println("password : " + requestUser.getPassword());
 		System.out.println("email : " + requestUser.getEmail());
 		User user = userRepository.findById(id).orElseThrow(() -> {
-			return new IllegalArgumentException("수정에 실패 하였습니다.");
+			return new IllegalArgumentException("수정에 실패했습니다.");
 		});
 		user.setPassword(requestUser.getPassword());
 		user.setEmail(requestUser.getEmail());
@@ -57,17 +70,14 @@ public class DummyControllerTest {
 	//http://localhost:8080/dummy/user/1
 	@GetMapping("/dummy/user/{id}")
 	public User detail(@PathVariable int id) {
-		//user/4를 찾으면 데이터베이스에서 못찾고 User가 null이 되잖아.
-		//Optional로 너의 객체를 감싸서 가져올테니 null인지 아닌지 판단해줘
 		User user = userRepository.findById(id).orElseThrow(() -> {
-			return new IllegalArgumentException("해당 유저의 아이디가 없습니다. id : " + id);
+			return new IllegalArgumentException("찾는 아이디가 없습니다. id : " + id);
 		});
 		
 		return user;
 	}
 	
-	//http://localhost:8080/blog/dummy/join(요청)
-	//http의 body에 username, password, email 데이터를 가지고(요청)
+	//http://localhost:8080/blog/dummy/join
 	@PostMapping("/dummy/join")
 	public String join(User user) {
 		System.out.println("username : " + user.getUsername());
@@ -75,7 +85,7 @@ public class DummyControllerTest {
 		System.out.println("email : " + user.getEmail());
 		user.setRole(RoleType.USER);
 		userRepository.save(user);
-		return "회원 가입이 완료 되었습니다.";
+		return "가입했습니다.";
 	}
 
 }
